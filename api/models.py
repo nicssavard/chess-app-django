@@ -1,6 +1,19 @@
 from django.db import models
+from django.contrib.auth.models import User
 # import string
 # import random
+
+class Chat(models.Model):
+    participants = models.ManyToManyField(User)
+
+    def __str__(self):
+        return f"Chat: {self.id}"
+
+class Message(models.Model):
+    chat = models.ForeignKey(Chat, related_name='messages', on_delete=models.CASCADE)
+    sender = models.ForeignKey(User,  on_delete=models.CASCADE)
+    content = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
 
 # def generate_unique_code():
 #     length = 6
