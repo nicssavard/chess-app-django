@@ -36,11 +36,16 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'daphne',
     'django.contrib.staticfiles',
     'api.apps.ApiConfig',
     'rest_framework',
     'corsheaders',
+    'channels',
+    
 ]
+
+ASGI_APPLICATION = 'chess_app.asgi.application'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
