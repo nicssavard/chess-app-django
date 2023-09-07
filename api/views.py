@@ -44,6 +44,7 @@ def login(request):
 
 @api_view(['GET'])
 def get_user_from_token(request):
+    print('get_user_from_token')
     token = request.headers.get('Authorization', '').split(' ')[1]  # Assume the header is 'Bearer <token>'
     print(token)
     try:

@@ -14,6 +14,7 @@ from django.core.asgi import get_asgi_application
 
 from django.urls import path
 from .consumers import websocket_application
+from chess.chessGame import chessGame
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'chess_app.settings')
 
@@ -23,7 +24,8 @@ async def chat(scope, receive, send):
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),
     'websocket': URLRouter([
-        path('chat', chat)
+        path('chat', chat),
+        path('chessGame', chessGame)
    ]),
 })
 #application = get_asgi_application()
