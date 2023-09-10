@@ -133,11 +133,6 @@ class Chessboard:
     def to_dict(self):
         return {
             'turn': self.turn,
-            # 'board': [
-            #     [
-            #         piece.to_dict() if piece else {'type': 'empty'} for piece in row
-            #     ] for row in self.board
-            # ],
             'fen': self.fen, # 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w
             'check': self.check,
             'checkmate': self.checkmate,
@@ -146,19 +141,38 @@ class Chessboard:
             # Add other attributes as needed
         }
     def movePiece(self, start: ChessPosition, end: ChessPosition):
-        print("movePiece")
+        piece = self.getPieceAtPosition(start)
+        if piece is None:
+            return False
+        if piece.getColor() != self.turn:
+            return False
+        if not piece.move(end):
+            return False
+        #test check
         self.makeMove(start, end)
+        #test check and checkmate
+        return True
 
     def makeMove(self, start: ChessPosition, end: ChessPosition):
         piece = self.getPieceAtPosition(start)
-        print(piece)
-        self.board[start['y']][start['x']] = None
-        self.board[end['y']][end['x']] = piece
+        #check promotion
+        if self.pawnPromotion(piece, end):
+            piece = Queen(piece.color, piece.position, self)
+        deadPiece = self.getPieceAtPosition(end)
+        self.board[start.y][start.x] = None
+        self.board[end.y][end.x] = piece
         piece.position = end
         self.turn = PieceColor.Black if self.turn == PieceColor.White else PieceColor.White
         self.fen = self.to_FEN()
 
-
-
+    def pawnPromotion(self, piece: ChessPiece, end: ChessPosition):
+        if piece.type != 'Pawn':
+            return False
+        if piece.color == PieceColor.White and end.y != 7:
+            return False
+        if piece.color == PieceColor.Black and end.y != 0:
+            return False
+        return True
+    
     def getPieceAtPosition(self, position: ChessPosition):
-        return self.board[position['y']][position['x']]
+        return self.board[position.y][position.x]

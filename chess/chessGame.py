@@ -4,27 +4,17 @@ from django.contrib.auth.models import User
 from channels.db import database_sync_to_async
 import json
 from urllib.parse import parse_qs
+
+from .classes.ChessBoard import ChessPosition
 from .classes.ChessBoard import Chessboard
 # connected_websockets = set()
 chat_connections = {}
+chess_boards = {}
 
-@database_sync_to_async
-def get_chat_by_id(chat_id):
-    return Chat.objects.get(id=chat_id)
-
-@database_sync_to_async
-def get_user_by_id(chat_id):
-    return User.objects.get(id=chat_id)
-
-@database_sync_to_async
-def create_message(message, sender, chat):
-    newMessage = Message.objects.create(chat=chat, sender=sender, content=message)
-    newMessage.save()
-    return newMessage
 
 async def chessGame(scope, receive, send):
     print('websocket_application')
-    chessBoard = Chessboard()
+    # chessBoard = Chessboard()
     query_string = scope.get('query_string', b'').decode('utf-8')
     query_params = parse_qs(query_string)
     chessGameId = query_params.get('chessGameId', [None])[0]
@@ -36,6 +26,7 @@ async def chessGame(scope, receive, send):
     # Add the new client to the list for this chatId
     if chessGameId not in chat_connections:
         chat_connections[chessGameId] = []
+        chess_boards[chessGameId] = Chessboard()
     chat_connections[chessGameId].append(send)
     
     
@@ -44,7 +35,7 @@ async def chessGame(scope, receive, send):
             event = await receive()
             
             if event['type'] == 'websocket.connect':
-                board_data = chessBoard.to_dict()
+                board_data = chess_boards[chessGameId].to_dict()
                 serialized_board_data = json.dumps(board_data)
                 await send({
                     'type': 'websocket.accept'
@@ -60,12 +51,13 @@ async def chessGame(scope, receive, send):
                 break
 
             if event['type'] == 'websocket.receive':
+                chessBoard = chess_boards[chessGameId]
                 event_data = json.loads(event['text'])
-                print(event_data)
                 start = event_data.get('start')
+                start = ChessPosition(start['x'], start['y'])
                 end = event_data.get('end')
+                end = ChessPosition(end['x'], end['y'])
                 chessBoard.movePiece(start, end)
-                print(chessBoard.to_FEN())
                 # print(event.get('text'))
                 # print(command['start'])
 
