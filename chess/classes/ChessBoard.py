@@ -57,18 +57,27 @@ class Chessboard:
         self.board.append([self.bPawn1, self.bPawn2, self.bPawn3, self.bPawn4, self.bPawn5, self.bPawn6, self.bPawn7, self.bPawn8])
         self.board.append([self.bRook1, self.bKnight1, self.bBishop1, self.bQueen, self.bKing, self.bBishop2, self.bKnight2, self.bRook2])
 
-        self.wPawn = []
-        self.bPawn = []
-        self.wRook = []
-        self.bRook = []
-        self.wKnight = []
-        self.bKnight = []
-        self.wBishop = []
-        self.bBishop = []
-        self.wQueen = []
-        self.bQueen = []
-        self.wKing = []
-        self.bKing = []
+        self.alive_pieces.extend([
+        self.wPawn1, self.wPawn2, self.wPawn3, self.wPawn4, self.wPawn5, self.wPawn6, self.wPawn7, self.wPawn8,
+        self.bPawn1, self.bPawn2, self.bPawn3, self.bPawn4, self.bPawn5, self.bPawn6, self.bPawn7, self.bPawn8,
+        self.wRook1, self.wRook2, self.bRook1, self.bRook2,
+        self.wKnight1, self.wKnight2, self.bKnight1, self.bKnight2,
+        self.wBishop1, self.wBishop2, self.bBishop1, self.bBishop2,
+        self.wQueen, self.bQueen,
+        self.wKing, self.bKing
+])
+        # self.wPawn = []
+        # self.bPawn = []
+        # self.wRook = []
+        # self.bRook = []
+        # self.wKnight = []
+        # self.bKnight = []
+        # self.wBishop = []
+        # self.bBishop = []
+        # self.wQueen = []
+        # self.bQueen = []
+        # self.wKing = []
+        # self.bKing = []
         #self.setupPieces()
 
     def setupPieces(self):
@@ -137,7 +146,8 @@ class Chessboard:
             'check': self.check,
             'checkmate': self.checkmate,
             'winner': self.winner,
-            'alive_pieces': [[piece.to_dict() for piece in piece_list] for piece_list in self.alive_pieces],
+            'dead_pieces': [piece.to_FEN() for piece in self.alive_pieces],
+            # 'alive_pieces': [[piece.to_dict() for piece in piece_list] for piece_list in self.alive_pieces],
             # Add other attributes as needed
         }
     def movePiece(self, start: ChessPosition, end: ChessPosition):

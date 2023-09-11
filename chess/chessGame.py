@@ -13,14 +13,17 @@ chess_boards = {}
 
 
 async def chessGame(scope, receive, send):
+    queue = []
     print('websocket_application')
     # chessBoard = Chessboard()
     query_string = scope.get('query_string', b'').decode('utf-8')
     query_params = parse_qs(query_string)
     chessGameId = query_params.get('chessGameId', [None])[0]
-
+    print(chessGameId)
+    
     if chessGameId is None:
         print("chessGameId not provided")
+
         return
     
     # Add the new client to the list for this chatId
