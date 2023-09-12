@@ -2,8 +2,8 @@ from .ChessPiece import Pawn, Rook, Knight, Bishop, Queen, King, ChessPosition, 
 import json
 
 class PieceColor:
-    White = "white"
-    Black = "black"
+    White = "w"
+    Black = "b"
 
 
 class Chessboard:

@@ -1,6 +1,6 @@
 class PieceColor:
-    White = "white"
-    Black = "black"
+    White = "w"
+    Black = "b"
 
 class ChessPosition:
     def __init__(self, x: int, y: int):
