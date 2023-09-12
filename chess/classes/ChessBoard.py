@@ -1,4 +1,5 @@
 from .ChessPiece import Pawn, Rook, Knight, Bishop, Queen, King, ChessPosition, ChessPiece
+import json
 
 class PieceColor:
     White = "white"
@@ -150,6 +151,10 @@ class Chessboard:
             # 'alive_pieces': [[piece.to_dict() for piece in piece_list] for piece_list in self.alive_pieces],
             # Add other attributes as needed
         }
+    
+    def get_serialized_board(self):
+        return json.dumps(self.to_dict())
+
     def movePiece(self, start: ChessPosition, end: ChessPosition):
         piece = self.getPieceAtPosition(start)
         if piece is None:
