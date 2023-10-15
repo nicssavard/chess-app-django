@@ -31,7 +31,6 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'chess.apps.ChessConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,11 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'daphne',
     'django.contrib.staticfiles',
-    'api.apps.ApiConfig',
     'rest_framework',
     'corsheaders',
     'channels',
-    
+    'chess.apps.ChessConfig',
+    'api.apps.ApiConfig',
 ]
 
 ASGI_APPLICATION = 'chess_app.asgi.application'
@@ -91,9 +90,17 @@ WSGI_APPLICATION = 'chess_app.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'chess',              # The name of your database
+        'USER': 'postgres',             # The PostgreSQL user you'll connect as
+        'PASSWORD': 'kali',    # The password for the PostgreSQL user
+        'HOST': 'localhost',            # Set to the address of your PostgreSQL instance
+        'PORT': '5432',                 # The default PostgreSQL port, change if yours is different
     }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # }
 }
 
 
