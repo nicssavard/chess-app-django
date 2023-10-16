@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-)w-#dxa8ht4nfym+zx#k##!i(8waho+=@-88)ag10-s^hm0u(n
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['3.134.114.17', 'localhost', '127.0.0.1'] 
 
 
 # Application definition
@@ -94,12 +94,20 @@ WSGI_APPLICATION = 'chess_app.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'chess',              # The name of your database
+        'NAME': 'postgres',              # The name of your database
         'USER': 'postgres',             # The PostgreSQL user you'll connect as
-        'PASSWORD': 'kali',    # The password for the PostgreSQL user
-        'HOST': 'localhost',            # Set to the address of your PostgreSQL instance
+        'PASSWORD': 'NH45FCIfmTgeFUPG',    # The password for the PostgreSQL user
+        'HOST': 'db.wfjuagenauhkakjpzidh.supabase.co',            # Set to the address of your PostgreSQL instance
         'PORT': '5432',                 # The default PostgreSQL port, change if yours is different
     }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': 'chess',              # The name of your database
+    #     'USER': 'postgres',             # The PostgreSQL user you'll connect as
+    #     'PASSWORD': 'kali',    # The password for the PostgreSQL user
+    #     'HOST': 'localhost',            # Set to the address of your PostgreSQL instance
+    #     'PORT': '5432',                 # The default PostgreSQL port, change if yours is different
+    # }
     # 'default': {
     #     'ENGINE': 'django.db.backends.sqlite3',
     #     'NAME': BASE_DIR / 'db.sqlite3',
