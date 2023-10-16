@@ -96,3 +96,6 @@ def find_chat_by_participants(request):
 
     return JsonResponse({'error': 'Chat not found'}, status=404)
     
+@api_view(['GET'])
+def test(request):
+    return Response({"message": "test"}, status=status.HTTP_200_OK)

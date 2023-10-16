@@ -32,5 +32,6 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('get_user_from_token/', views.get_user_from_token, name='get_user_from_token'),
     path('find_chat_by_participants/', views.find_chat_by_participants, name='find_chat_by_participants'),
+    path('test/', views.test, name='test'),
     path('', include(router.urls)),
 ]
