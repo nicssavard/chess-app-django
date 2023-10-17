@@ -163,15 +163,16 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# CORS_ALLOW_ALL_ORIGINS = True  # For development only
-CORS_ALLOW_ALL_ORIGINS = False
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "https://localhost:3000",
-    "http://localhost:8000",
-    "https://localhost:8000",
-    "http://localhost:80",
-    "https://localhost:80",
-    "http://127.0.0.1:9000"
-]
+CORS_ALLOW_ALL_ORIGINS = True  # For development only
+# CORS_ALLOW_ALL_ORIGINS = False
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3000",
+#     "https://localhost:3000",
+#     "http://localhost:8000",
+#     "https://localhost:8000",
+#     "http://localhost:80",
+#     "https://localhost:80",
+#     "http://127.0.0.1:9000",
+#     'https://chess-app-frontend-drab.vercel.app',
+# ]
 
