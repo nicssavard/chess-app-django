@@ -4,17 +4,22 @@ from urllib.parse import parse_qs
 import time
 from .classes.ChessBoard import ChessPosition
 from .classes.ChessBoard import Chessboard
-# connected_websockets = set()
-
-friend_waiting = {} #used when a user is waiting for a friend to join their game
 
 
 
+def printStatus():
+    print('queue')
+    for player in Player.queue:
+        print(player.user_id)
+    print('games')
+    for game in ChessGame.games:
+        print(game)
+    print('')
 
 async def chessGame(scope, receive, send):
-    
+    printStatus() 
     event = await receive()
-
+    print(event)
     if event['type'] == 'websocket.connect':
         await send({
             'type': 'websocket.accept'
@@ -26,39 +31,35 @@ async def chessGame(scope, receive, send):
     userId = query_params.get('userId', [None])[0]
     
     
-    if chessGameId is None:   #No game id, random opponent game
-        player = Player(send, userId)
-        if len(Player.queue) == 0:  #No opponent in queue
-            player.add_to_queue()
-        else:
-            opponent = player.get_opponent_from_queue()            
-            game = ChessGame(opponent, player)
+    player = Player(send, userId)
+    if len(Player.queue) == 0:  #No opponent in queue
+        print(f'player {userId} added to queue')
+        player.add_to_queue()
+        await player.sender({
+            'type': 'websocket.send',
+            'text': json.dumps({
+                'messageType': 'WAITING_FOR_OPPONENT',
+                'gameId': player.get_game_id(),
+                'userId': player.user_id,
+                'games': len(ChessGame.games),
+                'queue': len(Player.queue),
+            })
+        })
+    else:
+        opponent = player.get_opponent_from_queue()            
+        game = ChessGame(opponent, player)
+        print(f'game {game.game_id} started - player {userId} vs player {opponent.user_id}')
 
-            for p in game.get_players():
-                await p.sender({
-                    'type': 'websocket.send',
-                    'text': json.dumps({
-                        'board': game.board.get_serialized_board(),
-                        'color': p.get_color()
-                    })
-                })        
-    else:  #Game id, provided 
-        player = Player(send, userId, chessGameId)
-        if chessGameId not in friend_waiting:
-            friend_waiting[chessGameId] = player   
-        else:
-            opponent = friend_waiting[chessGameId]
-            game = ChessGame(opponent, player)
-            del friend_waiting[chessGameId]
-            for p in game.get_players():
-                await p.sender({
-                    'type': 'websocket.send',
-                    'text': json.dumps({
-                        'board': game.board.get_serialized_board(),
-                        'color': p.get_color()
-                    })
-                })     
-    
+        for p in game.get_players():
+            await p.sender({
+                'type': 'websocket.send',
+                'text': json.dumps({
+                    'messageType': 'GAME_STARTED',
+                    'board': game.board.get_serialized_board(),
+                    'color': p.get_color()
+                })
+            })        
+    printStatus()
     try:
         while True:
             event = await receive()
@@ -84,14 +85,13 @@ async def chessGame(scope, receive, send):
     finally:
         # Remove the client from the set when it disconnects
         print('disconnected')
-        if chessGameId in friend_waiting:
-            del friend_waiting[chessGameId]
         if player in Player.queue:
             player.remove_from_queue()
         print(chessGameId)
         if ChessGame.games.get(gameId) is not None:
             print(f'game {gameId} deleted - player {userId} lost')
             del ChessGame.games[gameId]
+        printStatus()
 
 
             

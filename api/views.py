@@ -27,7 +27,6 @@ def register(request):
 
 @api_view(['POST'])
 def login(request):
-    print('login')
     username = request.data.get('username')
     password = request.data.get('password')
     user = authenticate(username=username, password=password)
@@ -48,9 +47,7 @@ def login(request):
 
 @api_view(['GET'])
 def get_user_from_token(request):
-    print('get_user_from_token')
     token = request.headers.get('Authorization', '').split(' ')[1]  # Assume the header is 'Bearer <token>'
-    print(token)
     try:
         # Decode the token
         untyped_token = UntypedToken(token)
