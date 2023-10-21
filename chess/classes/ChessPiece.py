@@ -2,10 +2,12 @@ class PieceColor:
     White = "w"
     Black = "b"
 
+
 class ChessPosition:
     def __init__(self, x: int, y: int):
         self.x = x
         self.y = y
+
 
 class ChessPiece:
     def __init__(self, color, position, board, type):
@@ -13,7 +15,8 @@ class ChessPiece:
         self.position = position
         self.board = board
         self.type = type
-    
+        self.hasMoved = False
+
     def __str__(self):
         return self.color + " " + self.type
 
@@ -23,7 +26,7 @@ class ChessPiece:
             'position': {'x': self.position.x, 'y': self.position.y},
             'type': self.type
         }
-    
+
     def to_FEN(self):
         match self.type:
             case "Pawn":
@@ -40,17 +43,16 @@ class ChessPiece:
                 return "K" if self.color == PieceColor.White else "k"
             case _:
                 return " "
-            
-        
+
     def getColor(self):
         return self.color
-    
+
     def getPosition(self):
         return self.position
-    
+
     def getBoard(self):
         return self.board
-    
+
     def getType(self):
         return self.type
 
@@ -64,10 +66,10 @@ class ChessPiece:
         if not self.basicMoveChecks(end):
             return False
         return self.canMoveTo(end)
-    
+
     def canMoveTo(self, end: ChessPosition):
         return True
-    
+
     def basicMoveChecks(self, end: ChessPosition):
         if self.position.x == end.x and self.position.y == end.y:
             return False
@@ -75,7 +77,7 @@ class ChessPiece:
         if target is not None and target.getColor() == self.color:
             return False
         return True
-    
+
     def isPathClear(self, start: ChessPosition, end: ChessPosition):
         if self.isLinear(end):
             return self.lineClear(end)
@@ -83,29 +85,29 @@ class ChessPiece:
             return self.diagonalClear(start, end)
         return False
 
-
     def isLinear(self, end: ChessPosition):
         return self.getPosition().x == end.x or self.getPosition().y == end.y
-    
+
     def isDiagonal(self, start: ChessPosition, end: ChessPosition):
         return abs(start.x - end.x) == abs(start.y - end.y)
-    
+
     def lineClear(self, end: ChessPosition):
         direction = self.moveDirection(self.getPosition(), end)
         for i in range(1, max(abs(self.getPosition().x - end.x), abs(self.getPosition().y - end.y))):
             if self.board.getPieceAtPosition(ChessPosition(self.getPosition().x + i * direction["x"], self.getPosition().y + i * direction["y"])) is not None:
                 return False
         return True
-    
+
     def diagonalClear(self, start: ChessPosition, end: ChessPosition):
         direction = self.moveDirection(start, end)
         for i in range(1, abs(start.x - end.x)):
             if self.board.getPieceAtPosition(ChessPosition(start.x + i * direction["x"], start.y + i * direction["y"])) is not None:
                 return False
         return True
-    
+
     def setPositon(self, position: ChessPosition):
         self.position = position
+
 
 class Pawn(ChessPiece):
     def __init__(self, color, position, board):
@@ -116,7 +118,7 @@ class Pawn(ChessPiece):
             return self.canAttack(end)
         else:
             return self.isMovingStraight(end)
-    
+
     def isMovingStraight(self, end: ChessPosition):
         if self.getPosition().x != end.x:
             return False
@@ -133,7 +135,7 @@ class Pawn(ChessPiece):
             elif end.y != self.getPosition().y - 1:
                 return False
         return True
-        
+
     def canAttack(self, end: ChessPosition):
         if abs(self.getPosition().x - end.x) != 1:
             return False
@@ -153,6 +155,7 @@ class Rook(ChessPiece):
     def canMoveTo(self,  end: ChessPosition):
         return self.isLinear(end) and self.isPathClear(self.getPosition(), end)
 
+
 class Knight(ChessPiece):
     def __init__(self, color, position, board):
         super().__init__(color, position, board, "Knight")
@@ -166,6 +169,7 @@ class Knight(ChessPiece):
             return True
         return False
 
+
 class Bishop(ChessPiece):
     def __init__(self, color, position, board):
         super().__init__(color, position, board, "Bishop")
@@ -173,12 +177,14 @@ class Bishop(ChessPiece):
     def canMoveTo(self, end: ChessPosition):
         return self.isDiagonal(self.getPosition(), end) and self.isPathClear(self.getPosition(), end)
 
+
 class Queen(ChessPiece):
     def __init__(self, color, position, board):
         super().__init__(color, position, board, "Queen")
 
     def canMoveTo(self, end: ChessPosition):
         return (self.isLinear(end) or self.isDiagonal(self.getPosition(), end)) and self.isPathClear(self.getPosition(), end)
+
 
 class King(ChessPiece):
     def __init__(self, color, position, board):
@@ -188,4 +194,3 @@ class King(ChessPiece):
         if abs(self.getPosition().x - end.x) <= 1 and abs(self.getPosition().y - end.y) <= 1:
             return True
         return False
-
