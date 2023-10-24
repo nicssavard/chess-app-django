@@ -17,10 +17,13 @@ class BoardPosition:
         return self.x == other.x and self.y == other.y
 
     def __str__(self):
-        return self.toChessNotation()
+        return f"BoardPosition({self.x}, {self.y})"
 
     def get_x(self):
         return self.x
 
     def get_y(self):
         return self.y
+
+    def __repr__(self):
+        return f"BoardPosition({self.x}, {self.y})"
