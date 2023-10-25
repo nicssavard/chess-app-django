@@ -1,6 +1,7 @@
 from .ChessPiece import Pawn, Rook, Knight, Bishop, Queen, King, ChessPiece
 import json
 from .BoardPosition import BoardPosition
+import copy
 
 
 class PieceColor:
@@ -84,6 +85,10 @@ class Chessboard:
             moveType = 'attack'
         else:
             return False
+
+        # test move for check
+        if not self.testMoveForCheck(start, end, moveType):
+            return False
         # test check
         if moveType == 'move':
             piece.move(end)
@@ -91,8 +96,15 @@ class Chessboard:
             piece.attack(end)
 
         # test check and checkmate
+
         self.updateState(start, end, piece, moveType)
         self.generatePossibleMovesAndAttacks()
+        # self.check = self.isCheck(self.turn)
+        self.check = self.isCheck(self.turn)
+        if self.check:
+            if self.isCheckmate(self.turn):
+                self.checkmate = True
+                self.winner = PieceColor.Black if self.turn == PieceColor.White else PieceColor.White
         self.generateFEN()
         return True
 
@@ -159,13 +171,36 @@ class Chessboard:
         return filter(lambda piece: piece.getColor() == color, self.alive_pieces)
 
     def pawnPromotion(self, piece: ChessPiece, end: BoardPosition):
-        if piece.type != 'Pawn':
-            return False
-        if piece.color == PieceColor.White and end.y != 7:
-            return False
-        if piece.color == PieceColor.Black and end.y != 0:
+        pass
+
+    def testMoveForCheck(self, start: BoardPosition, end: BoardPosition, moveType: str):
+        chessBoardCopy = copy.deepcopy(self)
+        piece = chessBoardCopy.getPieceAtPosition(start)
+        if moveType == 'move':
+            piece.move(end)
+        elif moveType == 'attack':
+            piece.attack(end)
+        chessBoardCopy.generatePossibleMovesAndAttacks()
+        if chessBoardCopy.isCheck(self.turn):
             return False
         return True
+
+    def isCheck(self, color: PieceColor):
+        king = self.wKing if color == PieceColor.White else self.bKing
+        return king.getPosition() in self.getPossibleAttacks(PieceColor.White if color == PieceColor.Black else PieceColor.Black)
+
+    def isCheckmate(self, color: PieceColor):
+        isCheckmate = True
+        for piece in self.getAlivePieces(color):
+            for move in piece.getMoves():
+                if self.testMoveForCheck(piece.getPosition(), move, 'move'):
+                    isCheckmate = False
+                    break
+            for attack in piece.getAttacks():
+                if self.testMoveForCheck(piece.getPosition(), attack, 'attack'):
+                    isCheckmate = False
+                    break
+        return isCheckmate
 
     def isThreatened(self, position: BoardPosition, color: PieceColor):
         isThreatened = position in self.getPossibleAttacks(
@@ -173,6 +208,8 @@ class Chessboard:
         return isThreatened
 
     def getPieceAtPosition(self, position: BoardPosition):
+        if position.x < 0 or position.x > 7 or position.y < 0 or position.y > 7:
+            return -1
         try:
             return self.board[position.y][position.x]
         except:
@@ -185,6 +222,15 @@ class Chessboard:
 
     def getDeadPieces(self):
         return self.dead_pieces
+
+    def getCheck(self):
+        return self.check
+
+    def getCheckmate(self):
+        return self.checkmate
+
+    def getWinner(self):
+        return self.winner
 
     def changeTurn(self):
         self.turn = PieceColor.Black if self.turn == PieceColor.White else PieceColor.White

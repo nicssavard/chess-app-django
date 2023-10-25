@@ -26,4 +26,4 @@ class BoardPosition:
         return self.y
 
     def __repr__(self):
-        return f"BoardPosition({self.x}, {self.y})"
+        return f"({self.x}, {self.y})"

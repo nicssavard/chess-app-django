@@ -69,6 +69,8 @@ class ChessPiece:
             while d <= lenght:
                 pos = self.getPosition().add(d * dir.x, d * dir.y)
                 endSquare = self.getBoard().getPieceAtPosition(pos)
+                if endSquare == -1:
+                    break
                 if endSquare is None:
                     self.addMove(pos)
                 elif endSquare.getColor() != self.getColor():
@@ -160,10 +162,10 @@ class ChessPiece:
         return position in self.possibleAttacks
 
     def __str__(self):
-        return self.color + " " + self.type
+        return self.color + " " + self.type + " " + str(self.position)
 
     def __repr__(self):
-        return self.color + " " + self.type
+        return self.color + " " + self.type + " " + str(self.getPosition().x) + " " + str(self.getPosition().y)
 
 
 class Pawn(ChessPiece):
