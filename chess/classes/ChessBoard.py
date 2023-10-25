@@ -139,6 +139,20 @@ class Chessboard:
         self.possibleMoves = self.whiteMoves + self.blackMoves
         self.possibleAttacks = self.whiteAttacks + self.blackAttacks
 
+    def getPossibleMoves(self, color=None):
+        if color is None:
+            return self.possibleMoves
+        if color == PieceColor.White:
+            return self.whiteMoves
+        return self.blackMoves
+
+    def getPossibleAttacks(self, color=None):
+        if color is None:
+            return self.possibleAttacks
+        if color == PieceColor.White:
+            return self.whiteAttacks
+        return self.blackAttacks
+
     def getAlivePieces(self, color=None):
         if color is None:
             return self.alive_pieces
@@ -152,6 +166,11 @@ class Chessboard:
         if piece.color == PieceColor.Black and end.y != 0:
             return False
         return True
+
+    def isThreatened(self, position: BoardPosition, color: PieceColor):
+        isThreatened = position in self.getPossibleAttacks(
+            color) or position in self.getPossibleMoves(color)
+        return isThreatened
 
     def getPieceAtPosition(self, position: BoardPosition):
         try:

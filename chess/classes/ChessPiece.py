@@ -111,10 +111,19 @@ class ChessPiece:
     def isDiagonal(self, start: BoardPosition, end: BoardPosition):
         return abs(start.x - end.x) == abs(start.y - end.y)
 
-    def lineClear(self, end: BoardPosition):
-        direction = self.moveDirection(self.getPosition(), end)
-        for i in range(1, max(abs(self.getPosition().x - end.x), abs(self.getPosition().y - end.y))):
-            if self.board.getPieceAtPosition(BoardPosition(self.getPosition().x + i * direction["x"], self.getPosition().y + i * direction["y"])) is not None:
+    def lineClear(self, start: BoardPosition, end: BoardPosition):
+        dir = self.moveDirection(start, end)
+        lenght = abs(start.x - end.x)
+        for i in range(1, lenght):
+            if self.board.getPieceAtPosition(BoardPosition(start.x + i * dir["x"], start.y + i * dir["y"])) is not None:
+                return False
+        return True
+
+    def lineNotThreatened(self, start: BoardPosition, end: BoardPosition):
+        dir = self.moveDirection(start, end)
+        lenght = abs(start.x - end.x)
+        for i in range(1, lenght):
+            if self.board.isThreatened(BoardPosition(start.x + i * dir["x"], start.y + i * dir["y"]), PieceColor.Black if self.getColor() == PieceColor.White else PieceColor.White):
                 return False
         return True
 
@@ -192,13 +201,13 @@ class Pawn(ChessPiece):
             return False
         if self.getColor() == PieceColor.White:
             if self.getPosition().y == 1 and end.y == 3:
-                if not self.lineClear(end):
+                if not self.lineClear(self.getPosition(), end):
                     return False
             elif end.y != self.getPosition().y + 1:
                 return False
         elif self.getColor() == PieceColor.Black:
             if self.getPosition().y == 6 and end.y == 4:
-                if not self.lineClear(end):
+                if not self.lineClear(self.getPosition(), end):
                     return False
             elif end.y != self.getPosition().y - 1:
                 return False
@@ -310,6 +319,16 @@ class King(ChessPiece):
     def __init__(self, color, position, board):
         super().__init__(color, position, board, "King")
 
+    def move(self, end: BoardPosition):
+        if abs(self.getPosition().x - end.x) == 2:
+            if end.x == 2:
+                self.getBoard().movePiece(
+                    self.getBoard().getPieceAtPosition(BoardPosition(0, self.getPosition().y)), BoardPosition(3, self.getPosition().y))
+            elif end.x == 6:
+                self.getBoard().movePiece(
+                    self.getBoard().getPieceAtPosition(BoardPosition(7, self.getPosition().y)), BoardPosition(5, self.getPosition().y))
+        super().move(end)
+
     def generateMoves(self):
         self.clearMoves()
         directions = [
@@ -323,6 +342,23 @@ class King(ChessPiece):
             BoardPosition(-1, -1)
         ]
         self.generateMovesLine(directions, 1)
+        self.generateCastlingMoves()
+
+    def generateCastlingMoves(self):
+        y = 0 if self.getColor() == PieceColor.White else 7
+        if not self.hasMoved:
+            self.tryCastling(BoardPosition(
+                0, y), BoardPosition(2, y), BoardPosition(1, y))
+            self.tryCastling(BoardPosition(
+                7, y), BoardPosition(6, y), BoardPosition(6, y))
+
+    def tryCastling(self, rookPosition: BoardPosition, castlingPosition: BoardPosition, checkPosition: BoardPosition):
+        rook = self.getBoard().getPieceAtPosition(rookPosition)
+        if rook and self.isCastlingPossible(checkPosition, rook):
+            self.addMove(castlingPosition)
+
+    def isCastlingPossible(self,  checkPosition: BoardPosition, rook):
+        return self.lineClear(self.getPosition(), checkPosition) and self.lineNotThreatened(self.getPosition(), checkPosition) and self.lineNotThreatened(self.getPosition(), rook.getPosition())
 
     def canMoveTo(self, end: BoardPosition):
         return abs(self.getPosition().x - end.x) <= 1 and abs(self.getPosition().y - end.y) <= 1

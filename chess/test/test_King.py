@@ -16,3 +16,10 @@ class TestKing(unittest.TestCase):
         chessBoard.move(BoardPosition(4, 7), BoardPosition(5, 6))
         self.assertEqual(chessBoard.getFEN(
         ), "rnbq1bnr/ppp2kpp/3p4/4p3/4P3/8/PPPP1PPP/RNB1KBNR w KQ - 0 4")
+
+    def test_castle(self):
+        chessBoard = Chessboard(
+            "rnbqkbnr/1ppppppp/8/8/p7/5NP1/PPPPPPBP/RNBQK2R w KQkq - 0 4")
+        chessBoard.move(BoardPosition(4, 0), BoardPosition(6, 0))
+        self.assertEqual(chessBoard.getFEN(
+        ), "rnbqkbnr/1ppppppp/8/8/p7/5NP1/PPPPPPBP/RNBQ1RK1 b kq - 1 4")
